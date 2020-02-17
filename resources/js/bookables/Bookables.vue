@@ -1,17 +1,22 @@
 <template>
     <div>
-        <bookable-list-item
-            v-if="bookable1"
-            :item-title="bookable1.title"
-            :item-content="bookable1.content"
-            :price="1000"
-        ></bookable-list-item>
-        <bookable-list-item
-            v-if="bookable2"
-            :item-title="bookable2.title"
-            :item-content="bookable2.content"
-            :price="1500"
-        ></bookable-list-item>
+        <div v-if="loading">
+            Data is loading...
+        </div>
+        <div v-else>
+            <div class="row mb-4" v-for="row in rows" :key="'row' + row">
+                <div class="col"
+                    v-for="(bookable, column) in bookablesInRow(row)"
+                    :key="'row' + row + column">
+                    <bookable-list-item
+                        :item-title="bookable.title"
+                        :item-content="bookable.content"
+                        :price="1000"
+                    ></bookable-list-item>
+                </div>
+               <div class="col" v-for="p in placeholdersInRow(row)" :key="'placeholder' + row + p"></div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -23,23 +28,37 @@ export default {
     },
     data() {
         return {
-            bookables: null
+            bookables: null,
+            loading: false,
+            columns: 3
         };
     },
+    computed: {
+        rows() {
+            return this.bookables === null // if this is true
+            ? 0 // then do this
+            : Math.ceil(this.bookables.length / this.columns) // if not true, do this
+        }
+    },
+    methods: {
+        bookablesInRow(row) {
+           return this.bookables.slice((row - 1) * this.columns, row * this.columns);
+        },
+        placeholdersInRow(row) {
+            return this.columns - this.bookablesInRow(row).length;
+        }
+    },
     created() {
-       console.log('created');
-       console.log(this.bookable1);
-       console.log(this.bookable2);
-       setTimeout(() => {
-           this.bookables = [{
-               title: "Cheap Villa !!",
-               content: "A very cheap villa"
-           },
-           {
-               title: "Cheap Villa 2!!",
-               content: "A very cheap villa 2"
-           }];
-       }, 2000);
+        this.loading = true;
+
+        const p = new Promise((resolve, reject) => {
+            console.log(resolve);
+            console.log(reject);
+            setTimeout(() => resolve("Hello"), 3000);
+        })
+            .then(result => console.log(`Success ${result}`))
+            .catch(result => console.log(`Error ${result}`));
+        console.log(p);
    }
 };
 </script>
