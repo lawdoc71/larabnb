@@ -5,12 +5,12 @@
         </div>
         <div v-else>
             <div class="row mb-4" v-for="row in rows" :key="'row' + row">
-                <div class="col"
+                <div class="col d-flex align-items-stretch"
                     v-for="(bookable, column) in bookablesInRow(row)"
                     :key="'row' + row + column">
                     <bookable-list-item
                         :item-title="bookable.title"
-                        :item-content="bookable.content"
+                        :item-description="bookable.description"
                         :price="1000"
                     ></bookable-list-item>
                 </div>
@@ -56,9 +56,17 @@ export default {
             console.log(reject);
             setTimeout(() => resolve("Hello"), 3000);
         })
-            .then(result => console.log(`Success ${result}`))
+            .then(result => "Hello again " + result)
+            .then(result => console.log(result))
             .catch(result => console.log(`Error ${result}`));
-        console.log(p);
+        console.log(p)
+
+        const request = axios.get("/api/bookables").then(response => {
+            this.bookables = response.data;
+            this.loading = false;
+        });
    }
 };
 </script>
+
+
